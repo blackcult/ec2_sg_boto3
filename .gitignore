@@ -1,2 +1,5 @@
 .vscode/settings.json
 env/*
+sg_test_eun1.csv
+.gitignore
+publicip.txt

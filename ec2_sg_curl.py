@@ -23,7 +23,7 @@ def allow_ingress(client, port, ip, comment, sg, udptcp):
              ]
             }
         ])
-        print('Ingress Successfully Set %s' % data)
+        #print('Ingress Successfully Set %s' % data)
     except ClientError as e:
         print(e)
 
@@ -64,6 +64,7 @@ def main():
         json_file["previousIp"] = publicip
         with open("rules.json", "w") as writer:
             writer.write(json.dumps(json_file,indent=4))
+            # json.dump(json_file, writer)
     else:
         print(f'Public IP is still {json_file["previousIp"]}')
         

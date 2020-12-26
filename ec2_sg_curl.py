@@ -4,6 +4,7 @@ from botocore.exceptions import ClientError
 import subprocess
 import json
 import random
+import logging
 
 def public_ip(interface):
     ip = subprocess.getoutput(f'curl -s --interface {interface} https://checkip.amazonaws.com')
@@ -24,6 +25,7 @@ def allow_ingress(client, port, ip, comment, sg, udptcp):
             }
         ])
     except ClientError as e:
+        logging.error(e)
         print(e)
 
 def clear_ingress(resource, sg):
@@ -37,7 +39,7 @@ def main():
     parser.add_argument('--secret_key', type=str)
     parser.add_argument('--sg', type=str)
     parser.add_argument('--interface', type=str)
-    parser.add_argument('--init')
+    parser.add_argument('--init', action='store_true')
     parser.add_argument('--rulesfile', type=str)
 
     args = parser.parse_args()
@@ -57,6 +59,7 @@ def main():
         json_file["previousIp"] = ""
         with open(args.rulesfile, "w") as writer:
             writer.write(json.dumps(json_file,indent=4))
+        logging.info(f'Cleaning up {args.rulesfile}')
     elif publicip != json_file["previousIp"]:
         print(f'IP {json_file["previousIp"]} changed to {publicip} - updating {args.sg}')
         allow_ingress(ec2, random.randint(1000, 9999), f"{publicip}/32", "temp rule", args.sg, "udp")
@@ -66,9 +69,12 @@ def main():
         json_file["previousIp"] = publicip
         with open(args.rulesfile, "w") as writer:
             writer.write(json.dumps(json_file,indent=4))
+        logging.info(f'IP {json_file["previousIp"]} changed to {publicip} - {args.sg} updated')
     else:
+        logging.debug(f'Public IP is still {json_file["previousIp"]}')
         print(f'Public IP is still {json_file["previousIp"]}')
         
 
+logging.basicConfig(filename='ec2_sg.log', encoding='utf-8', level=logging.INFO)
 if __name__ == "__main__":
     main()

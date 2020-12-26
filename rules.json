@@ -1,0 +1,10 @@
+{
+    "previousIp": "",
+    "rules": [
+        {
+            "port": 22,
+            "type": "tcp",
+            "description": "something"
+        }
+    ]
+}

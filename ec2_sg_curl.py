@@ -75,6 +75,6 @@ def main():
         print(f'Public IP is still {json_file["previousIp"]}')
         
 
-logging.basicConfig(filename='ec2_sg.log', encoding='utf-8', level=logging.INFO)
+logging.basicConfig(filename='ec2_sg.log', level=logging.INFO)
 if __name__ == "__main__":
     main()
